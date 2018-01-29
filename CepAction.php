@@ -13,6 +13,12 @@ class CepAction extends \yii\base\Action
 {
     const URL_CORREIOS = 'http://www.buscacep.correios.com.br/sistemas/buscacep/resultadoBuscaCepEndereco.cfm';
 
+
+    /**
+     * @var text classe Cidade.
+     */
+    public $cityClass = 'backend\modules\sistema\models\Cidade';
+
     /**
      * @var array data sent in request
      */
@@ -84,10 +90,21 @@ class CepAction extends \yii\base\Action
                     $cols = $tr->getElementsByTagName('td');
                     list($city, $state) = explode('/', $cols->item(2)->nodeValue);
 
+                    $city_obj = false;
+
+                    if (class_exists($this->cityClass)) {
+
+                        $city_class = Yii::createObject($this->cityClass);
+
+                        if ($city_class)
+                            $city_obj   = $city_class::find()->select(['cidade_id as id', "CONCAT(cidade.nome,' - ',estado.uf) as text"])->joinWith('estado')->where(['like','cidade.nome',$city])->andWhere(['estado.uf' => $state])->createCommand()->queryOne();
+                    }
+
                     $result[] = [
                         'location' => $cols->item(0)->nodeValue,
                         'district' => $cols->item(1)->nodeValue,
                         'city' => $city,
+                        'city_id' => $city_obj,
                         'state' => $state,
                         'cep' => $cols->item(3)->nodeValue,
                     ];

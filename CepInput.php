@@ -7,6 +7,7 @@ use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\Url;
 use yii\widgets\InputWidget;
+use yii\widgets\MaskedInput;
 
 class CepInput extends InputWidget
 {
@@ -27,13 +28,19 @@ class CepInput extends InputWidget
     public $searchIcon = 'glyphicon glyphicon-search';
 
     /**
+     * @var boolean If using masked input.
+     */
+    public $mask = false;
+
+    /**
      * @var array $fields ID of html elements that will receive result of search
      * ```php
      * [
      *     'location' => 'location_input_id',
      *     'district' => 'district_input_id',
-     *     'city' => 'city_input_id',
-     *     'state' => 'state_input_id',
+     *     'city'     => 'city_input_id',
+     *     'city_id'  => 'city_id_input_id',
+     *     'state'    => 'state_input_id',
      * ]
      * ```
      */
@@ -41,6 +48,7 @@ class CepInput extends InputWidget
         'location' => '',
         'district' => '',
         'city' => '',
+        'city_id' => '',
         'state' => '',
     ];
 
@@ -64,9 +72,19 @@ class CepInput extends InputWidget
     public function run()
     {
         if ($this->hasModel()) {
-            $input = Html::activeTextInput($this->model, $this->attribute, $this->options);
+            $input = ($this->mask) ?  MaskedInput::widget([
+                'model'     => $this->model,
+                'attribute' => $this->attribute,
+                'options'   => $this->options,
+                'mask'    => '99999-999',
+            ]) : Html::activeTextInput($this->model, $this->attribute, $this->options);
         } else {
-            $input = Html::textInput($this->name, $this->value, $this->options);
+            $input = ($this->mask) ? MaskedInput::widget([
+                'name'    =>  $this->name,
+                'value'   => $this->value,
+                'options' => $this->options,
+                'mask'    => '99999-999',
+            ]) : Html::textInput($this->name, $this->value, $this->options);
         }
 
         $this->renderSearch($input, $this->id);

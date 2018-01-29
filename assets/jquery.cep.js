@@ -20,6 +20,14 @@
 
             var that = this;
 
+            //Added block to search CEP on enter press
+            this.$element.on('keydown', function(e){
+                if (e.which == '13') {
+                    e.preventDefault();
+                    $(this).parent().find('span a:first').trigger('click');
+                }
+            });
+
             this.$element.parent().find('span a:first').on('click', function(){
                 that.search($(this), true);
             });
@@ -41,7 +49,12 @@
                     var $input = jQuery('#' + this.fields[prop]);
                     if ($input.length) {
                         if (prop in data) {
-                            $input.val(data[prop]);
+                            if ($input.data('select2')) {
+                                $input.prepend('<option value="'+data[prop].id+'">'+data[prop].text+'</option>');
+                                $input.val(data[prop].id).trigger('change');
+                            } else {
+                                $input.val(data[prop]);
+                            }
                         } else {
                             $input.val('');
                         }
