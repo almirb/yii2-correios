@@ -97,7 +97,7 @@ class CepAction extends \yii\base\Action
                         $city_class = Yii::createObject($this->cityClass);
 
                         if ($city_class)
-                            $city_obj   = $city_class::find()->select(['cidade_id as id', "CONCAT(cidade.nome,' - ',estado.uf) as text"])->joinWith('estado')->where(['like','cidade.nome',$city])->andWhere(['estado.uf' => $state])->createCommand()->queryOne();
+                            $city_obj   = $city_class::find()->select(['cidade_id as id', "CONCAT(cidade.nome,' - ',estado.uf) as text"])->joinWith('estado')->where(['cidade.nome' => $city, 'estado.uf' => $state])->createCommand()->queryOne();
                     }
 
                     $result[] = [
