@@ -107,17 +107,30 @@
             }
 
             if (val) {
+                $input.attr('disabled','disabled');
+
+                var hint = this.$root.find('.hint-block');
+                var hint_texto_original = hint.html();
+                hint.html('Pesquisando CEP ' + val + '...');
+
                 params[that.queryParam] = val;
                 $.get(this.action, params, function (data) {
                     if (cep) {
                         that._assign(data[0]);
+
                     } else {
                         that._locate(data);
                     }
+                    hint.html('Dados localizados com sucesso! :)');
+                    $input.removeAttr('disabled');
                 }).fail(function (xhr, status, text) {
                     var error = $.parseJSON(xhr.responseText);
-                    window.alert((error.hasOwnProperty('message') && error.message) ? error.message : text);
+                    //window.alert((error.hasOwnProperty('message') && error.message) ? error.message : text);
+                    $input.removeAttr('disabled');
+                    hint.html(error.message +'  :(');
                 });
+
+
             }
         }
     };
