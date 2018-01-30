@@ -30,7 +30,12 @@ class CepInput extends InputWidget
     /**
      * @var boolean If using masked input.
      */
-    public $mask = false;
+    public $useMask = false;
+
+    /**
+     * @var boolean If using search modal.
+     */
+    public $useSearchModal = true;
 
     /**
      * @var array $fields ID of html elements that will receive result of search
@@ -72,14 +77,14 @@ class CepInput extends InputWidget
     public function run()
     {
         if ($this->hasModel()) {
-            $input = ($this->mask) ?  MaskedInput::widget([
+            $input = ($this->useMask) ?  MaskedInput::widget([
                 'model'     => $this->model,
                 'attribute' => $this->attribute,
                 'options'   => $this->options,
                 'mask'    => '99999-999',
             ]) : Html::activeTextInput($this->model, $this->attribute, $this->options);
         } else {
-            $input = ($this->mask) ? MaskedInput::widget([
+            $input = ($this->useMask) ? MaskedInput::widget([
                 'name'    =>  $this->name,
                 'value'   => $this->value,
                 'options' => $this->options,
@@ -88,7 +93,10 @@ class CepInput extends InputWidget
         }
 
         $this->renderSearch($input, $this->id);
-        $this->renderModal();
+
+        if ($this->useSearchModal)
+            $this->renderModal();
+
         $this->registerJs();
     }
 
